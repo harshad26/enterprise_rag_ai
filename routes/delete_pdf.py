@@ -1,6 +1,5 @@
 from dotenv import load_dotenv
 from fastapi import APIRouter
-from pydantic import BaseModel
 from services.operation_services import delete_by_document_id
 from schemas.delete_schema import DeleteRequest
 

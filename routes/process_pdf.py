@@ -16,11 +16,17 @@ async def process_pdf(document_id: int = Form(...), file: UploadFile = File(...)
   os.makedirs("temp", exist_ok=True)
   file_location = f"temp/{file.filename}"
 
-  with open(file_location, "wb") as buffer:
-    shutil.copyfileobj(file.file, buffer)
+  # chunk uploaded PDF file and later delete it.
+  try:
+    with open(file_location, "wb") as buffer:
+      shutil.copyfileobj(file.file, buffer)
 
-  chunks = chunk_pdf(file_location, document_id)
-  return {"message": "PDF processed successfully", "chunks": len(chunks)}
+    chunks = chunk_pdf(file_location, document_id)
+
+    return {"message": "PDF processed successfully", "chunks": len(chunks)}
+  finally:
+    if os.path.exists(file_location):
+      os.remove(file_location)
 
 # take a PDF file and chunk it then store it into Vectore DB...
 def chunk_pdf(file_location, document_id):
